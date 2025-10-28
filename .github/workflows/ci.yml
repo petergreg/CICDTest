@@ -1,0 +1,58 @@
+name: Java CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  AWS_REGION: eu-north-1
+  ECR_REPOSITORY: mon-microservice
+  IMAGE_TAG: latest
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔄 Checkout du code
+        uses: actions/checkout@v4
+
+      - name: ☕ Installation de Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: 🔧 Compilation du projet
+        run: mvn clean compile
+
+      - name: 🧪 Tests unitaires
+        run: mvn test
+
+      - name: 📦 Création du jar
+        run: mvn package
+
+      - name: 🐳 Construction de l’image Docker
+        run: docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+
+      - name: 📋 Liste des images Docker (debug)
+        run: docker images
+
+      - name: 🔐 Configuration des identifiants AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: 🔑 Connexion à Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: 🚀 Push de l’image vers ECR
+        run: |
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
