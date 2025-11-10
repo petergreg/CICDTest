@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17.0.5_8-jre-ubi9-minimal
+FROM eclipse-temurin:21-jre-ubi9-minimal
 
 WORKDIR /app
 
@@ -8,4 +8,4 @@ EXPOSE 8080
 
 CMD java \
     $JAVA_OPTS \
-    -jar movie-reviews.jar
+    -jar demo-cicd-1.0.0.jar
