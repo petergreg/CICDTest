@@ -7,11 +7,11 @@ on:
     branches: [ "main" ]
 
 env:
-  AWS_REGION: eu-north-1
-  ECR_REPOSITORY: mon-microservice
+  AWS_REGION: eu-west-3
+  ECR_REPOSITORY: my-repository
   IMAGE_TAG: latest
-  ECS_CLUSTER: mon-cluster
-  ECS_SERVICE: mon-service
+#  ECS_CLUSTER: mon-cluster
+#  ECS_SERVICE: mon-service
 
 jobs:
   build:
@@ -59,9 +59,9 @@ jobs:
           docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
           docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: 🚢 Mise à jour du service ECS
-        run: |
-          aws ecs update-service \
-            --cluster $ECS_CLUSTER \
-            --service $ECS_SERVICE \
-            --force-new-deployment
+#      - name: 🚢 Mise à jour du service ECS
+#        run: |
+#          aws ecs update-service \
+#            --cluster $ECS_CLUSTER \
+#            --service $ECS_SERVICE \
+#            --force-new-deployment

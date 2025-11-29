@@ -9,6 +9,6 @@ public class ProjectController {
 
     @GetMapping("/hello")
     public String helloGreg() {
-        return "Hello Greg V2";
+        return "Hello Paris";
     }
 }
